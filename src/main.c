@@ -17,10 +17,10 @@ void parse_args(int argc, char* argv[])
 {
     //Сообщений для вывода через -h или --help
     char help_str[] =
-    "Options:\n"
-    "-h, --help                          - Print help and exit\n"
-    "-f, --file <path>                   - Set a csv file path\n"
-    "-m, --month <num>                   - Show only one month statistic (0-11)\n";
+    "Calculate temperature statistic using data from a csv file. Options:\n"
+    "-h, --help         - Print help and exit\n"
+    "-f, --file <path>  - Set a csv file path\n"
+    "-m, --month <num>  - Show only one month statistic (0-11)\n";
 
     //Заполняем параметры опций
     const struct option long_opts[] =
