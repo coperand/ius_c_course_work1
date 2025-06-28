@@ -21,9 +21,9 @@ int8_t date_equal(struct date_data date1, struct date_data date2)
 int8_t is_temperature_on_date_valid(struct temperature_on_date_data temperature_on_date)
 {
     //Если какое-либо из полей имеет некорректное значение, возвращаем 0 (аля false)
-    if(temperature_on_date.date.month > 11)
+    if(temperature_on_date.date.month < 1 || temperature_on_date.date.month > 12)
         return 0;
-    if(temperature_on_date.date.day > 31)
+    if(temperature_on_date.date.day < 1 || temperature_on_date.date.day > 31)
         return 0;
     if(temperature_on_date.date.hour > 23)
         return 0;

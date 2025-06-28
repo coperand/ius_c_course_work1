@@ -20,7 +20,7 @@ void parse_args(int argc, char* argv[])
     "Calculate temperature statistic using data from a csv file. Options:\n"
     "-h, --help         - Print help and exit\n"
     "-f, --file <path>  - Set a csv file path\n"
-    "-m, --month <num>  - Show only one month statistic (0-11)\n";
+    "-m, --month <num>  - Show only one month statistic (1-12)\n";
 
     //Заполняем параметры опций
     const struct option long_opts[] =
@@ -61,11 +61,14 @@ void parse_args(int argc, char* argv[])
         printf("A file path is not specified\n");
         failure = 1;
     }
-    if(month > 11 && month != 0xFF)
+    if((month < 1 || month > 12) && month != 0xFF)
     {
-        printf("A month value is invalid. Must be 0-11\n");
+        printf("A month value is invalid. Must be 1-12\n");
         failure = 1;
     }
+    //Если параметров нет, выводим help
+    if(argc == 1)
+        printf("%s", help_str);
     if(failure)
         exit(EXIT_FAILURE);
 }
