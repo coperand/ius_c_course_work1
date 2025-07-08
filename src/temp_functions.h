@@ -1,5 +1,5 @@
-#ifndef __TEMP_API_H__
-#define __TEMP_API_H__
+#ifndef __TEMP_FUNCTIONS_H__
+#define __TEMP_FUNCTIONS_H__
 
 #include <stdio.h>
 #include <stdint.h>

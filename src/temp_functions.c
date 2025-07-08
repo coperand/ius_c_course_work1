@@ -1,4 +1,4 @@
-#include "temp_api.h"
+#include "temp_functions.h"
 
 //Головной элемент связного списка
 struct temperatures_list* list_head = NULL;
@@ -325,10 +325,46 @@ void print_list()
     }
 }
 
-
 int8_t parse_csv(char* file_path)
 {
-    //TODO: Реализовать
+    //Открываем файл для чтения
+    FILE* file = fopen(file_path, "r");
+    if(!file)
+        return -1;
 
-    return -1;
+    //Считываем файл построчно, отслеживая номера строк
+    struct temperature_on_date_data temperature_on_date;
+    char line[25]; //Такой длины буфера должно быть достаточно, учитывая ожидаемый формат
+    uint32_t lines_counter = 0;
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        //Инкрементируем номер строки
+        ++lines_counter;
+
+        // Парсим строку
+        int result = sscanf(line, "%hu;%hhu;%hhu;%hhu;%hhu;%hhd", &temperature_on_date.date.year,  &temperature_on_date.date.month, &temperature_on_date.date.day, &temperature_on_date.date.hour,
+                            &temperature_on_date.date.minute, &temperature_on_date.temperature);
+
+        //Обрабатываем ошибку формата строки
+        if(result != 6)
+        {
+            printf("Line %u has invalid format\n", lines_counter);
+            continue;
+        }
+
+        //Добавляем разобранные данные в список
+        int push_result = push_to_list_front(temperature_on_date);
+        //Обрабатываем ошибки
+        if(push_result == -1)
+            printf("Line %u has invalid data\n", lines_counter);
+        else if(push_result == -2)
+            printf("Failed to allocate memory for the line %u data\n", lines_counter);
+    }
+
+    //Пишем итоговое количество строк
+    printf("Read %u lines\n", lines_counter);
+
+    //Закрываем файл
+    fclose(file);
+    return 0;
 }
