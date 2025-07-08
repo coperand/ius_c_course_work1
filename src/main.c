@@ -4,7 +4,7 @@
 #include <string.h>
 #include <linux/limits.h>
 
-#include "temp_api.h"
+#include "temp_functions.h"
 
 //Путь к файлу
 char file_path[PATH_MAX];
@@ -54,6 +54,7 @@ void parse_args(int argc, char* argv[])
         }
     }
 
+
     //Валидация параметров
     int8_t failure = 0;
     if(strlen(file_path) == 0)
@@ -81,51 +82,94 @@ int main(int argc, char* argv[])
     //Разбираем аргументы командной строки
     parse_args(argc, argv);
 
-    //DEBUG
-    /* struct temperature_on_date_data temperature_on_date1;
-    temperature_on_date1.date.year = 2024;
-    temperature_on_date1.date.month = 4;
-    temperature_on_date1.date.day = 25;
-    temperature_on_date1.date.hour = 11;
-    temperature_on_date1.date.minute = 41;
-    temperature_on_date1.temperature = 6;
-    if(push_to_list_back(temperature_on_date1) < 0)
-        return -1;
+    //Разбираем файл
+    if(parse_csv(file_path) < 0)
+    {
+        printf("Failed to parse file %s\n", file_path);
+        exit(EXIT_FAILURE);
+    }
 
-    struct temperature_on_date_data temperature_on_date2;
-    temperature_on_date2.date.year = 2024;
-    temperature_on_date2.date.month = 5;
-    temperature_on_date2.date.day = 26;
-    temperature_on_date2.date.hour = 12;
-    temperature_on_date2.date.minute = 42;
-    temperature_on_date2.temperature = 12;
-    if(push_to_list_front(temperature_on_date2) < 0)
-        return -1;
+    //Выводим статистику по месяцам
+    printf("Statistic by month:\n");
+    for(uint8_t i = 1; i < 13; i++)
+    {
+        //Если указан конкретный месяц и это не он, пропускаем
+        if(month != 0xFF && i != month)
+            continue;
 
-    struct temperature_on_date_data temperature_on_date3;
-    temperature_on_date3.date.year = 2024;
-    temperature_on_date3.date.month = 3;
-    temperature_on_date3.date.day = 25;
-    temperature_on_date3.date.hour = 11;
-    temperature_on_date3.date.minute = 41;
-    temperature_on_date3.temperature = 6;
-    if(push_to_list_back(temperature_on_date3) < 0)
-        return -1;
+        //Получаем статистику по месяцу
+        float average = month_average(i);
+        int8_t min = month_min(i);
+        int8_t max = month_max(i);
 
-    sort_list();
+        //Если конкретный месяц не указан, и статистика пуста, пропускаем месяц
+        if(month == 0xFF && isnan(average) && min == INT8_MAX && max == INT8_MIN)
+            continue;
 
-    remove_from_list(temperature_on_date3.date);
+        //Выводим читаемое название месяца
+        switch(i)
+        {
+            case 1:
+                printf("  January:\n");
+                break;
+            case 2:
+                printf("  February:\n");
+                break;
+            case 3:
+                printf("  March:\n");
+                break;
+            case 4:
+                printf("  April:\n");
+                break;
+            case 5:
+                printf("  May:\n");
+                break;
+            case 6:
+                printf("  June:\n");
+                break;
+            case 7:
+                printf("  July:\n");
+                break;
+            case 8:
+                printf("  August:\n");
+                break;
+            case 9:
+                printf("  September:\n");
+                break;
+            case 10:
+                printf("  October:\n");
+                break;
+            case 11:
+                printf("  November:\n");
+                break;
+            case 12:
+                printf("  December:\n");
+                break;
+        }
 
-    print_list();
+        //Выводим статистику по месяцу при наличии
+        if(!isnan(average))
+            printf("    average: %f\n", average);
+        if(min != INT8_MAX)
+            printf("    min: %d\n", min);
+        if(max != INT8_MIN)
+            printf("    max: %d\n", max);
+    }
 
-    printf("month_avg: %f\n", month_average(5));
-    printf("month_min: %d\n", month_min(5));
-    printf("month_max: %d\n", month_max(5));
-    printf("year_avg: %f\n", year_average());
-    printf("year_min: %d\n", year_min());
-    printf("year_max: %d\n", year_max());
+    //Если конкретный месяц не указан, выводим ещё и общую статистику за год
+    if(month == 0xFF)
+    {
+        printf("Statistic by year:\n");
 
-    destroy_list(); */
-
-    //TODO: Реализовать функционал
+        //Получаем и выводим статистику по году при наличии
+        float average = year_average();
+        if(!isnan(average))
+            printf("  average: %f\n", average);
+        int8_t min = year_min();
+        if(min != INT8_MAX)
+            printf("  min: %d\n", min);
+        int8_t max = year_max();
+        if(max != INT8_MIN)
+            printf("  max: %d\n", max);
+    }
 }
